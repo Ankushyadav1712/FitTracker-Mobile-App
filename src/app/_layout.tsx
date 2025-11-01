@@ -31,7 +31,7 @@ export default function Layout() {
           title: "History",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="clockcircle" color={color} size={size} />
+            <AntDesign name="clock-circle" color={color} size={size} />
           ),
         }}
       />
