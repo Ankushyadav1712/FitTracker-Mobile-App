@@ -216,10 +216,61 @@ export type ExercisesQueryResult = Array<{
   isActive?: boolean;
 }>;
 
+// Source: ../src/app/(app)/(tabs)/history/index.tsx
+// Variable: getWorkoutsQuery
+// Query: *[_type == "workout" && userId == $userId] | order(date desc) {    _id,    date,    duration,    exercises[] {      exercise->{        _id,        name      },      sets[] {        reps,        weight,        weightUnit,        _type,        _key      },      _type,      _key    }  }
+export type GetWorkoutsQueryResult = Array<{
+  _id: string;
+  date: string | null;
+  duration: number | null;
+  exercises: Array<{
+    exercise: {
+      _id: string;
+      name: string | null;
+    } | null;
+    sets: Array<{
+      reps: number | null;
+      weight: number | null;
+      weightUnit: "kg" | "lbs" | null;
+      _type: "exerciseSet";
+      _key: string;
+    }> | null;
+    _type: "workoutExercise";
+    _key: string;
+  }> | null;
+}>;
+
+// Source: ../src/app/(app)/(tabs)/history/workout-record.tsx
+// Variable: getWorkoutRecordQuery
+// Query: *[_type == "workout" && _id == $workoutId][0] {    _id,    _type,    _createdAt,    date,    duration,    exercises[] {      exercise-> {        _id,        name,        description,      },      sets[] {        reps,        weight,        weightUnit,        _type,        _key,      },      _type,      _key,    },  }
+export type GetWorkoutRecordQueryResult = {
+  _id: string;
+  _type: "workout";
+  _createdAt: string;
+  date: string | null;
+  duration: number | null;
+  exercises: Array<{
+    exercise: {
+      _id: string;
+      name: string | null;
+      description: string | null;
+    } | null;
+    sets: Array<{
+      reps: number | null;
+      weight: number | null;
+      weightUnit: "kg" | "lbs" | null;
+      _type: "exerciseSet";
+      _key: string;
+    }> | null;
+    _type: "workoutExercise";
+    _key: string;
+  }> | null;
+} | null;
+
 // Source: ../src/app/(app)/exercise-detail.tsx
 // Variable: singleExerciseQuery
-// Query: *[_type == "exercise" && _id == $id[0]]
-export type SingleExerciseQueryResult = Array<{
+// Query: *[_type == "exercise" && _id == $id][0]
+export type SingleExerciseQueryResult = {
   _id: string;
   _type: "exercise";
   _createdAt: string;
@@ -243,13 +294,15 @@ export type SingleExerciseQueryResult = Array<{
   };
   videoUrl?: string;
   isActive?: boolean;
-}>;
+} | null;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     "*[_type == \"exercise\"]{ ... }": ExercisesQueryResult;
-    "\n  *[_type == \"exercise\" && _id == $id[0]]\n": SingleExerciseQueryResult;
+    "\n  *[_type == \"workout\" && userId == $userId] | order(date desc) {\n    _id,\n    date,\n    duration,\n    exercises[] {\n      exercise->{\n        _id,\n        name\n      },\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      },\n      _type,\n      _key\n    }\n  }\n": GetWorkoutsQueryResult;
+    "\n  *[_type == \"workout\" && _id == $workoutId][0] {\n    _id,\n    _type,\n    _createdAt,\n    date,\n    duration,\n    exercises[] {\n      exercise-> {\n        _id,\n        name,\n        description,\n      },\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key,\n      },\n      _type,\n      _key,\n    },\n  }\n": GetWorkoutRecordQueryResult;
+    "\n  *[_type == \"exercise\" && _id == $id][0]\n": SingleExerciseQueryResult;
   }
 }
