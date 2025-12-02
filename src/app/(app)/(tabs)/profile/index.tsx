@@ -124,7 +124,7 @@ export default function ProfilePage() {
               <View className="w-16 h-16 bg-blue-600 rounded-full items-center justify-center mr-4">
                 <Image
                   source={{
-                    uri: user.externalAccounts?.[0]?.imageUrl ?? user?.imageUrl,
+                    uri: user?.imageUrl ?? user?.externalAccounts[0]?.imageUrl,
                   }}
                   className="rounded-full"
                   style={{ width: 64, height: 64 }}

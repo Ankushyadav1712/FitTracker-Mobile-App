@@ -16,6 +16,18 @@
       "expo-font"
     ],
     "name": "fit-app",
-    "slug": "fit-app"
+    "slug": "fit-app",
+    "extra": {
+      "router": {
+        "origin": "https://n"
+      },
+      "eas": {
+        "projectId": "3e07a59a-1046-4bf8-91d4-56c180fd23c3"
+      }
+    },
+    "owner": "ankushyadav_1712",
+    "android": {
+      "package": "com.fitapp"
+    }
   }
 }
