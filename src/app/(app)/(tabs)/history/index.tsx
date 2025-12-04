@@ -1,11 +1,18 @@
 import { client } from "@/lib/sanity/client";
-import React, { useEffect,useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {defineQuery} from "groq";
-import {useUser} from "@clerk/clerk-expo";
+import { defineQuery } from "groq";
+import { useUser } from "@clerk/clerk-expo";
 import { GetWorkoutsQueryResult } from "@/lib/sanity/types";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatDuration } from "lib/utils";
 
@@ -32,9 +39,7 @@ export const getWorkoutsQuery = defineQuery(`
   }
 `);
 
-
 export default function HistoryPage() {
-
   const { user } = useUser();
   const [workouts, setWorkouts] = useState<GetWorkoutsQueryResult>([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +52,7 @@ export default function HistoryPage() {
 
     try {
       const results = await client.fetch(getWorkoutsQuery, { userId: user.id });
-      console.log(user.id)
+      console.log(user.id);
       setWorkouts(results);
     } catch (error) {
       console.error("Error fetching workouts:", error);
@@ -56,6 +61,20 @@ export default function HistoryPage() {
       setRefreshing(false);
     }
   };
+
+  // --- THIS IS THE NEW PART ---
+  // This runs every time the screen comes into focus (tab click or back navigation)
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.id) {
+        // We call fetchWorkouts here.
+        // Note: We are NOT setting loading(true) here, so it refreshes "silently"
+        // without flashing the spinner every time you switch tabs.
+        fetchWorkouts();
+      }
+    }, [user?.id])
+  );
+  // ----------------------------
 
   // Handle refresh parameter from deleted workout
   useEffect(() => {
@@ -84,7 +103,6 @@ export default function HistoryPage() {
       workout.exercises?.map((ex) => ex.exercise?.name).filter(Boolean) || []
     );
   };
-
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -121,7 +139,6 @@ export default function HistoryPage() {
       </SafeAreaView>
     );
   }
-
 
   return (
     <SafeAreaView className="flex-1 bg-white">
